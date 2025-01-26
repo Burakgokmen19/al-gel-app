@@ -1,38 +1,66 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextInput, Text, TouchableOpacity, View, Alert } from 'react-native';
 
 export default function HomeScreen() {
-  const [girisText ,setGirisText] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  
+  async function handleRegister() {
+    try {
 
-  function textHandler(){
-    console.log("Text Input Changed");
+      const apiUrl = 'https://your-backend-url.com/api/register';
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Başarılı', 'Kayıt başarılı!'); // Başarı mesajı
+        console.log('API Response:', data);
+      } else {
+        Alert.alert('Hata', data.message || 'Bir hata oluştu.'); // Hata mesajı
+        console.error('API Hatası:', data);
+      }
+    } catch (error) {
+      Alert.alert('Hata', 'Bir bağlantı hatası oluştu.');
+      console.error('Bağlantı Hatası:', error);
+    }
   }
-  function buttonHandler(){
-    console.log('tıkladım');
-  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Al-Gel!</Text>
       <Text style={styles.title}>Hoş Geldiniz!</Text>
-      
+
       <TextInput
         style={styles.input}
         placeholder="E-posta"
         placeholderTextColor="#aaa"
         keyboardType="email-address"
-        onChangeText={textHandler}
-
+        onChangeText={setEmail}
+        value={email}
       />
-      
+
       <TextInput
         style={styles.input}
         placeholder="Şifre"
         placeholderTextColor="#aaa"
         secureTextEntry
+        onChangeText={setPassword}
+        value={password}
       />
-      
-      <TouchableOpacity style={styles.button}>
-        <Text onPress={buttonHandler} style={styles.buttonText}>Kayıt Ol</Text>
+
+      <TouchableOpacity style={styles.button} onPress={handleRegister}>
+        <Text style={styles.buttonText}>Kayıt Ol</Text>
       </TouchableOpacity>
     </View>
   );
